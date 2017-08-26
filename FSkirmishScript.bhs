@@ -220,7 +220,7 @@ scenario {
 	// DOCTRINE_PRUSSIAN
 	// ["Hoplites", "Hoplites", "Light Horse", "Horse Archer"]
 	doctrine_unit[DOCTRINE_PRUSSIAN] = [ "Slingers", "Horse Archer", "Cataphract", "Hoplites" ];
-	doctrine_percent[DOCTRINE_PRUSSIAN] = [ 13, 13, 27, 27 ];
+	doctrine_percent[DOCTRINE_PRUSSIAN] = [ 27, 13, 27, 13 ];
 	
 	// DOCTRINE_OTTOMAN
 	// ["Hoplites","Hoplites","Hoplites","Hoplites","Hoplites","Hoplites","Catapult", "Light Horse"]
