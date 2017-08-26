@@ -290,10 +290,9 @@ scenario {
 	static int events_canFamine = 0; // this will enable periodic famine toggling
 	static int events_famine = 0; // this will kill off farms periodically
 	
-	static int timed_useTimed = 1;
+	static int timed_useTimed = 0;
+	static int timed_useTimedEnchanced = 0;
 	static int timed_gameLength = 3600; // 1 hour
-	static int timed_ageLocked[] = [1,1,1,1,1,1,1,1];
-	static int timed_currentAge = 0;
 	static int timed_timePerAge = 450;
 	
 	static int acension_useAscension = 1;
@@ -492,15 +491,6 @@ scenario {
 			upkeep_useUpkeep = 0;
 		}
 		
-		int choice_ascension = popup_choice($S("Enable Age Locking?"),$S("Yes"), $S("No"));
-		if ( choice_ascension == 1 ) {
-			print_game_msg("Age Locking Script Enabled");
-			acension_useAscension = 1;
-		} else {
-			print_game_msg("Age Locking Script Disabled");
-			acension_useAscension = 0;
-		}
-		
 		int choice_doctrine = popup_choice($S("Enable Doctrines?"),$S("Yes"), $S("No"));
 		if ( choice_doctrine == 1 ) {
 			print_game_msg("Doctrines Enabled");
@@ -510,13 +500,16 @@ scenario {
 			doctrine_useDoctrine = 0;
 		}
 		
-		int choice_timed = popup_choice($S("Enable Timed Ages?"),$S("Yes"), $S("No"));
+		int choice_timed = popup_choice($S("Enable Timed Ages?"),$S("Yes"), $S("No"), $S("Yes - Enhanced"));
 		if ( choice_timed == 1 ) {
+			print_game_msg("Timed Ages Disabled");
+			timed_useTimed = 0;
+		} else if ( choice_timed == 0 ) {
 			print_game_msg("Timed Ages Enabled");
 			timed_useTimed = 1;
 		} else {
-			print_game_msg("Timed Ages Disabled");
-			timed_useTimed = 0;
+			print_game_msg("Enhanced Timed Ages Enabled");
+			timed_useTimedEnchanced = 1;
 		}
 		if ( timed_useTimed == 1 ) {
 			int choice_timedDuration = popup_choice($S("Game Duration"),$S("30 Mins"), $S("1 Hour"), $S("2 Hours"));
@@ -527,12 +520,11 @@ scenario {
 			} else {
 				timed_gameLength = 7200;
 			}
-			timed_currentAge = get_starting_age()-1;
-			timed_ageLocked[timed_currentAge] = 0;
 			int numberOfAges = get_ending_age() - get_starting_age() + 1;
 			timed_timePerAge = (int)(timed_gameLength / numberOfAges);
-			enable_trigger("doTimedTick");
-			set_timer("timedTick", timed_timePerAge);
+			string ageTimers[] = ["Timer_ClassicalAge", "Timer_MedievalAge", "Timer_GunpowderAge", "Timer_EnlightenmentAge", "Timer_IndustrialAge", "Timer_ModernAge", "Timer_InformationAge"];
+			
+			// Disable all the age up techs
 			for ( player = 1; player <= 8; player++) {
 				disable_tech( player, "Classical Age");
 				disable_tech( player, "Medieval Age");
@@ -541,9 +533,25 @@ scenario {
 				disable_tech( player, "Industrial Age");
 				disable_tech( player, "Modern Age");
 				disable_tech( player, "Information Age");
-				enable_tech( player, ageTech[timed_currentAge] );
+				enable_tech( player, ageTech[get_starting_age()-1] );
 			}
-			print_game_msg(ageTech[timed_currentAge]);
+			int timedTimer = 0;
+			int timedTimerHelper = 1;
+			for ( timedTimer = get_starting_age()-1; timedTimer < get_ending_age()-1; timedTimer++ ) {
+				set_timer(ageTimers[timedTimer], timedTimerHelper*timed_timePerAge);
+				timedTimerHelper++;
+			}
+		}
+		
+		if ( timed_useTimed == 0 && timed_useTimedEnchanced == 0 ) {
+			int choice_ascension = popup_choice($S("Enable Age Locking?"),$S("Yes"), $S("No"));
+			if ( choice_ascension == 1 ) {
+				print_game_msg("Age Locking Script Enabled");
+				acension_useAscension = 1;
+			} else {
+				print_game_msg("Age Locking Script Disabled");
+				acension_useAscension = 0;
+			}
 		}
 	}
 	
@@ -575,6 +583,107 @@ scenario {
 		}
 	}
 
+	// ordinary timed game
+	trigger doTimedAges_Classical ( timer_expired("Timer_ClassicalAge") ) {
+		// Classical age
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Classical Age" );
+		}
+	}
+	trigger doTimedAges_Medieval ( timer_expired("Timer_MedievalAge") ) {
+		// Medieval 
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Medieval Age" );
+		}
+	}
+	trigger doTimedAges_Gunpowder ( timer_expired("Timer_GunpowderAge") ) {
+		// Gunpowder age
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Gunpowder Age" );
+		}
+	}
+	trigger doTimedAges_Enlightenment ( timer_expired("Timer_EnlightenmentAge") ) {
+		// Enlightenment age
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Enlightenment Age" );
+		}
+	}
+	trigger doTimedAges_Industrial ( timer_expired("Timer_IndustrialAge") ) {
+		// Industrial age
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Industrial Age" );
+		}
+	}
+	trigger doTimedAges_Modern ( timer_expired("Timer_ModernAge") ) {
+		// Modern age
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Modern Age" );
+		}
+	}
+	trigger doTimedAges_Information ( timer_expired("Timer_InformationAge") ) {
+		// Information age
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Information Age" );
+		}
+	}
+	
+	
+	// we shall set up the narrative timed game events here
+	trigger doNarrativeAges_1000bc ( timer_expired("Timer_1000bc") ) {
+		// Classical age
+	}
+	trigger doNarrativeAges_300bc ( timer_expired("Timer_300bc") ) {
+		// Cataphract
+	}
+	trigger doNarrativeAges_400 ( timer_expired("Timer_400ad") ) {
+		// medieval
+	}
+	trigger doNarrativeAges_800 ( timer_expired("Timer_800ad") ) {
+		// knights
+	}
+	trigger doNarrativeAges_1200 ( timer_expired("Timer_1200ad") ) {
+		// Late Middle Ages
+	}
+	trigger doNarrativeAges_1340 ( timer_expired("Timer_1340ad") ) {
+		// Handcannons and Bombards
+	}
+	trigger doNarrativeAges_1450 ( timer_expired("Timer_1450ad") ) {
+		// Arquebusiers
+	}
+	trigger doNarrativeAges_1520 ( timer_expired("Timer_1520ad") ) {
+		// Musket
+	}
+	trigger doNarrativeAges_1600 ( timer_expired("Timer_1600ad") ) {
+		// Enlightenment
+	}
+	trigger doNarrativeAges_1750 ( timer_expired("Timer_1750ad") ) {
+		// rifles
+	}
+	trigger doNarrativeAges_1830 ( timer_expired("Timer_1830ad") ) {
+		// breach loading
+	}
+	trigger doNarrativeAges_1880 ( timer_expired("Timer_1880ad") ) {
+		// big ships, first skyscraper, smokeless powder, machine gun
+	}
+	trigger doNarrativeAges_1900 ( timer_expired("Timer_1900ad") ) {
+		// Industrial
+	}
+	trigger doNarrativeAges_1915 ( timer_expired("Timer_1915ad") ) {
+		// Tanks
+	}
+	trigger doNarrativeAges_1930 ( timer_expired("Timer_1930ad") ) {
+		// Modern
+	}
+	trigger doNarrativeAges_1950 ( timer_expired("Timer_1950ad") ) {
+		// Nukes
+	}
+	trigger doNarrativeAges_1970 ( timer_expired("Timer_1970ad") ) {
+		// Information
+	}
+	trigger doNarrativeAges_1990 ( timer_expired("Timer_1990ad") ) {
+		// MLRS
+	}
+	
 	// we want to randomise difficulty while recording what the chosen difficulty is.
 	trigger setDifficulty ( 1 == 1 ) {
 		for ( player = 1; player <= 8; player++) {
@@ -582,19 +691,6 @@ scenario {
 			newDifficulty = (int)max_val( 1, min_val( 5, get_leader_difficulty(player)+rand_int(-1,2)));
 			set_leader_difficulty( player, newDifficulty );
 		}
-	}
-
-	trigger doTimedTick ( timer_expired("timedTick") ) {
-		if ( timed_currentAge <  get_ending_age() - 1 ) {
-			enable_trigger("doTimedTick");
-			set_timer("timedTick", timed_timePerAge);
-		}
-		timed_currentAge++;
-		timed_ageLocked[timed_currentAge] = 0;
-		for ( player = 1; player <= 8; player++) {
-			enable_tech( player, ageTech[timed_currentAge] );
-		}
-		print_game_msg(ageTech[timed_currentAge]);
 	}
 	
 	trigger doCityTick ( timer_expired("cityTick") ) {
