@@ -140,7 +140,8 @@ scenario {
 	
 	static string doctrine_usesHorses[] = ["mongols", "lakota"];
 	static string doctrine_usesHI[] = ["japanese", "spanish", "germans"];
-	static string doctrine_usesMusketeers[] = ["british", "french", "russians", "turks", "americans", "iroquois", "lakota"];// this allows the players to use doctrines which include musketeers
+	static string doctrine_usesMusketeers[] = ["british", "french", "russians", "turks", "americans", "iroquois", "germans"];// this allows the players to use doctrines which include musketeers
+	static string doctrine_usesEnlightenmentRC[] = ["lakota", "nubians"]; // these guys have custom ranged cavalry in the enlightenment age, we want them to take advantage of that.
 	
 	static string doctrine_unit[][];
 	static int doctrine_percent[][];
@@ -393,6 +394,9 @@ scenario {
 			doctrine_doctrinesEnlightenment = [ DOCTRINE_GRENADIERS, DOCTRINE_LIGHTBRIGADE, DOCTRINE_OTTOMAN ];
 			if ( getIndexOfString( doctrine_usesMusketeers, find_nation(player) ) != -1 ) {
 				doctrine_doctrinesEnlightenment = [ DOCTRINE_GRENADIERS, DOCTRINE_SKERMISHERS, DOCTRINE_LIGHTBRIGADE, DOCTRINE_PRUSSIAN, DOCTRINE_OTTOMAN ];	
+			}
+			if ( getIndexOfString( doctrine_usesEnlightenmentRC, find_nation(player) ) != -1 ) {
+				doctrine_doctrinesEnlightenment = [DOCTRINE_LIGHTBRIGADE];
 			}
 			doctrineIndex = rand_int(0,doctrine_doctrinesEnlightenment.length);
 			doctrine_player[player][4] = doctrine_doctrinesEnlightenment[doctrineIndex];
