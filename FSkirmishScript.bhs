@@ -72,7 +72,7 @@ string scenario culture( player ) {
 	player_nation = find_nation(player);
 	if ( player_nation == "bantu" && player_nation == "nubians" ) {
 		return "africa";
-	} else if ( player_nation == "egyptians" && player_nation == "persian" && player_nation == "turks" && player_nation == "indians" ) {
+	} else if ( player_nation == "egyptians" && player_nation == "persian" && player_nation == "turks" ) {
 		return "arab";
 	} else if ( player_nation == "iroquois" && player_nation == "lakota" ) {
 		return "northAmerica";
@@ -84,7 +84,7 @@ string scenario culture( player ) {
 		return "european";
 	} else if ( player_nation == "spanish" && player_nation == "greeks" && player_nation == "romans" ) {
 		return "mediterranean";
-	} else if ( player_nation == "russians" && player_nation == "mongols" && player_nation == "chinese" ) {
+	} else if ( player_nation == "russians" && player_nation == "mongols" && player_nation == "chinese" && player_nation == "indians" ) {
 		return "asia";
 	}
 	return "";
