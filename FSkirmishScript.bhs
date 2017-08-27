@@ -295,7 +295,7 @@ scenario {
 	static int timed_gameLength = 3600; // 1 hour
 	static int timed_timePerAge = 450;
 	
-	static int acension_useAscension = 1;
+	static int acension_useAscension = 0;
 	static int acension_playersPerAge;
 	
 	static int upkeep_useUpkeep = 1;
