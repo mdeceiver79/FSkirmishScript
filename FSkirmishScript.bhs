@@ -49,7 +49,16 @@ int scenario countMilitaryUnitsInRadius ( localPlayer, x, y, radius ) {
 		}
 	}
 	return unitCounter;
-} 
+}
+
+int scenario eventDialog( int events_modalDialog, string message ) {
+	int dialogStrings[];
+	if ( events_modalDialog == 1 ) {
+		int eventDialogMessage = popup_choice( message, $S("Ok"), $S("") );
+	} else {
+		print_game_msg(message);
+	}
+}
 
 int scenario getIndexOfString ( string[] arrayArg, string elementArg ) {
 	for (int index = 0; index < arrayArg.length; index++) {
@@ -91,7 +100,7 @@ string scenario culture( player ) {
 }
 
 scenario {
-
+	
 	static int DOCTRINE_HITTITE = 0;
 	static int DOCTRINE_ROMAN = 1;
 	static int DOCTRINE_GREEK = 2;
@@ -290,6 +299,7 @@ scenario {
 	static int events_cityTickBase = 128; // basically the time between a city being "ticked"
 	static int events_canFamine = 0; // this will enable periodic famine toggling
 	static int events_famine = 0; // this will kill off farms periodically
+	static int events_modalDialog = 0;
 	
 	static int timed_useTimed = 0;
 	static int timed_useTimedEnchanced = 0;
@@ -546,6 +556,69 @@ scenario {
 				timedTimerHelper++;
 			}
 		}
+		if ( timed_useTimedEnchanced == 1 ) {
+			int choice_timedDuration = popup_choice($S("Game Duration"),$S("30 Mins"), $S("1 Hour"), $S("2 Hours"));
+			if ( choice_timedDuration == 0 ) {
+				timed_gameLength = 1800;
+			} else if ( choice_timedDuration == 1 ) {
+				timed_gameLength = 3600;
+			} else {
+				timed_gameLength = 7200;
+			}
+			int numberOfAges = get_ending_age() - get_starting_age() + 1;
+			timed_timePerAge = (int)(timed_gameLength / numberOfAges);
+			
+			// Disable all the age up techs
+			for ( player = 1; player <= 8; player++) {
+				disable_tech( player, "Classical Age");
+				disable_tech( player, "Medieval Age");
+				disable_tech( player, "Gunpowder Age");
+				disable_tech( player, "Enlightenment Age");
+				disable_tech( player, "Industrial Age");
+				disable_tech( player, "Modern Age");
+				disable_tech( player, "Information Age");
+				enable_tech( player, ageTech[get_starting_age()-1] );
+			}
+			int timedTimer = 0;
+			int timedTimerHelper = 1;
+			int ageTimes[] = [-1,-1,-1,-1,-1,-1,-1,-1];
+			for ( timedTimer = get_starting_age()-1; timedTimer < get_ending_age()-1; timedTimer++ ) {
+				ageTimes[timedTimer+1] = timedTimerHelper*timed_timePerAge;
+				timedTimerHelper++;
+			}
+			ageTimes[get_starting_age()-1] = 0;
+			if ( ageTimes[1] != -1 ) {
+				set_timer("Timer_1000bc", (int)( ageTimes[1] ) );
+				set_timer("Timer_300bc", (int)( ageTimes[1]+timed_timePerAge*0.5 ) ); // cataphracts
+			}
+			if ( ageTimes[2] != -1 ) {
+				set_timer("Timer_400ad", (int)( ageTimes[2] ) );
+				set_timer("Timer_800ad", (int)( ageTimes[2]+timed_timePerAge*1.5 ) ); // knights
+			}
+			if ( ageTimes[3] != -1 ) {
+				set_timer("Timer_1200ad", (int)( ageTimes[3] ) );
+				set_timer("Timer_1340ad", (int)( ageTimes[3]+timed_timePerAge*0.35 ) ); // gunpowder
+				set_timer("Timer_1450ad", (int)( ageTimes[3]+timed_timePerAge*0.625 ) ); // arquebus
+				set_timer("Timer_1520ad", (int)( ageTimes[3]+timed_timePerAge*0.8 ) ); // musket
+			}
+			if ( ageTimes[4] != -1 ) {
+				set_timer("Timer_1600ad", (int)( ageTimes[4] ) );
+				set_timer("Timer_1750ad", (int)( ageTimes[5]+timed_timePerAge*0.5 ) ); // rifles/skirmishers
+				set_timer("Timer_1840ad", (int)( ageTimes[5]+timed_timePerAge*0.8 ) ); // breach loading
+			}
+			if ( ageTimes[5] != -1 ) {
+				set_timer("Timer_1900ad", (int)( ageTimes[5] ) );
+				set_timer("Timer_1915ad", (int)( ageTimes[5]+timed_timePerAge*0.5 ) ); // tanks
+			}
+			if ( ageTimes[6] != -1 ) {
+				set_timer("Timer_1930ad", (int)( ageTimes[6] ) );
+				set_timer("Timer_1950ad", (int)( ageTimes[6]+timed_timePerAge*0.5 ) ); // nukes
+			}
+			if ( ageTimes[7] != -1 ) {
+				set_timer("Timer_1970ad", (int)( ageTimes[7] ) );
+				set_timer("Timer_1990ad", (int)( ageTimes[7]+timed_timePerAge*0.5 ) ); // MRLS
+			}
+		}
 		
 		if ( timed_useTimed == 0 && timed_useTimedEnchanced == 0 ) {
 			int choice_ascension = popup_choice($S("Enable Age Locking?"),$S("Yes"), $S("No"));
@@ -588,43 +661,44 @@ scenario {
 	}
 
 	// ordinary timed game
-	trigger doTimedAges_Classical ( timer_expired("Timer_ClassicalAge") ) {
+	trigger doTimedAges_Classical ( timer_expired("Timer_ClassicalAge") && timed_useTimed == 1 ) {
 		// Classical age
+		print_game_msg("Classical Age");
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Classical Age" );
 		}
 	}
-	trigger doTimedAges_Medieval ( timer_expired("Timer_MedievalAge") ) {
+	trigger doTimedAges_Medieval ( timer_expired("Timer_MedievalAge") && timed_useTimed == 1 ) {
 		// Medieval 
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Medieval Age" );
 		}
 	}
-	trigger doTimedAges_Gunpowder ( timer_expired("Timer_GunpowderAge") ) {
+	trigger doTimedAges_Gunpowder ( timer_expired("Timer_GunpowderAge") && timed_useTimed == 1 ) {
 		// Gunpowder age
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Gunpowder Age" );
 		}
 	}
-	trigger doTimedAges_Enlightenment ( timer_expired("Timer_EnlightenmentAge") ) {
+	trigger doTimedAges_Enlightenment ( timer_expired("Timer_EnlightenmentAge") && timed_useTimed == 1 ) {
 		// Enlightenment age
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Enlightenment Age" );
 		}
 	}
-	trigger doTimedAges_Industrial ( timer_expired("Timer_IndustrialAge") ) {
+	trigger doTimedAges_Industrial ( timer_expired("Timer_IndustrialAge") && timed_useTimed == 1 ) {
 		// Industrial age
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Industrial Age" );
 		}
 	}
-	trigger doTimedAges_Modern ( timer_expired("Timer_ModernAge") ) {
+	trigger doTimedAges_Modern ( timer_expired("Timer_ModernAge") && timed_useTimed == 1 ) {
 		// Modern age
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Modern Age" );
 		}
 	}
-	trigger doTimedAges_Information ( timer_expired("Timer_InformationAge") ) {
+	trigger doTimedAges_Information ( timer_expired("Timer_InformationAge") && timed_useTimed == 1 ) {
 		// Information age
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Information Age" );
@@ -633,59 +707,98 @@ scenario {
 	
 	
 	// we shall set up the narrative timed game events here
-	trigger doNarrativeAges_1000bc ( timer_expired("Timer_1000bc") ) {
+	trigger doNarrativeAges_1000bc ( timer_expired("Timer_1000bc") && timed_useTimedEnchanced == 1 ) {
 		// Classical age
+		eventDialog( events_modalDialog, "1000bc Classical Age" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Classical Age" );
+		}
 	}
-	trigger doNarrativeAges_300bc ( timer_expired("Timer_300bc") ) {
+	trigger doNarrativeAges_300bc ( timer_expired("Timer_300bc") && timed_useTimedEnchanced == 1 ) {
 		// Cataphract
+		eventDialog( events_modalDialog, "300bc Macedonian Cataphracts" );
 	}
-	trigger doNarrativeAges_400 ( timer_expired("Timer_400ad") ) {
+	trigger doNarrativeAges_400 ( timer_expired("Timer_400ad") && timed_useTimedEnchanced == 1 ) {
 		// medieval
+		eventDialog( events_modalDialog, "400ad Middle Ages" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Medieval Age" );
+		}
 	}
-	trigger doNarrativeAges_800 ( timer_expired("Timer_800ad") ) {
+	trigger doNarrativeAges_800 ( timer_expired("Timer_800ad") && timed_useTimedEnchanced == 1 ) {
 		// knights
+		eventDialog( events_modalDialog, "800ad First Knights" );
 	}
-	trigger doNarrativeAges_1200 ( timer_expired("Timer_1200ad") ) {
+	trigger doNarrativeAges_1200 ( timer_expired("Timer_1200ad") && timed_useTimedEnchanced == 1 ) {
 		// Late Middle Ages
+		eventDialog( events_modalDialog, "1200ad Late Middle Ages" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Gunpowder Age" );
+		}
 	}
-	trigger doNarrativeAges_1340 ( timer_expired("Timer_1340ad") ) {
+	trigger doNarrativeAges_1340 ( timer_expired("Timer_1340ad") && timed_useTimedEnchanced == 1 ) {
 		// Handcannons and Bombards
+		eventDialog( events_modalDialog, "1340ad Gunpowder Reaches Europe" );
 	}
-	trigger doNarrativeAges_1450 ( timer_expired("Timer_1450ad") ) {
+	trigger doNarrativeAges_1450 ( timer_expired("Timer_1450ad") && timed_useTimedEnchanced == 1 ) {
 		// Arquebusiers
+		eventDialog( events_modalDialog, "1450ad Arquebus invented" );
 	}
-	trigger doNarrativeAges_1520 ( timer_expired("Timer_1520ad") ) {
+	trigger doNarrativeAges_1520 ( timer_expired("Timer_1520ad") && timed_useTimedEnchanced == 1 ) {
 		// Musket
+		eventDialog( events_modalDialog, "1520ad Musket invented" );
 	}
-	trigger doNarrativeAges_1600 ( timer_expired("Timer_1600ad") ) {
+	trigger doNarrativeAges_1600 ( timer_expired("Timer_1600ad") && timed_useTimedEnchanced == 1 ) {
 		// Enlightenment
+		eventDialog( events_modalDialog, "1600ad The ages of Enlightenment" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Enlightenment Age" );
+		}
 	}
-	trigger doNarrativeAges_1750 ( timer_expired("Timer_1750ad") ) {
+	trigger doNarrativeAges_1750 ( timer_expired("Timer_1750ad") && timed_useTimedEnchanced == 1 ) {
 		// rifles
+		eventDialog( events_modalDialog, "1750ad Rifled muskets and skirmishers" );
 	}
-	trigger doNarrativeAges_1830 ( timer_expired("Timer_1830ad") ) {
+	trigger doNarrativeAges_1830 ( timer_expired("Timer_1830ad") && timed_useTimedEnchanced == 1 ) {
 		// breach loading
+		eventDialog( events_modalDialog, "1830ad Breach loading weapons invented" );
 	}
-	trigger doNarrativeAges_1880 ( timer_expired("Timer_1880ad") ) {
+	trigger doNarrativeAges_1880 ( timer_expired("Timer_1880ad") && timed_useTimedEnchanced == 1 ) {
 		// big ships, first skyscraper, smokeless powder, machine gun
+		eventDialog( events_modalDialog, "1880ad The times are changing. Skyscrapers, metal ships and smokeless powder." );
 	}
-	trigger doNarrativeAges_1900 ( timer_expired("Timer_1900ad") ) {
+	trigger doNarrativeAges_1900 ( timer_expired("Timer_1900ad") && timed_useTimedEnchanced == 1 ) {
 		// Industrial
+		eventDialog( events_modalDialog, "1900ad Welcome to the age of industry and opportunity" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Industrial Age" );
+		}
 	}
-	trigger doNarrativeAges_1915 ( timer_expired("Timer_1915ad") ) {
+	trigger doNarrativeAges_1915 ( timer_expired("Timer_1915ad") && timed_useTimedEnchanced == 1 ) {
 		// Tanks
+		eventDialog( events_modalDialog, "1915ad Metal landships. The tank is invented." );
 	}
-	trigger doNarrativeAges_1930 ( timer_expired("Timer_1930ad") ) {
+	trigger doNarrativeAges_1930 ( timer_expired("Timer_1930ad") && timed_useTimedEnchanced == 1 ) {
 		// Modern
+		eventDialog( events_modalDialog, "1930ad Welcome to the Modern age" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Modern Age" );
+		}
 	}
-	trigger doNarrativeAges_1950 ( timer_expired("Timer_1950ad") ) {
+	trigger doNarrativeAges_1950 ( timer_expired("Timer_1950ad") && timed_useTimedEnchanced == 1 ) {
 		// Nukes
+		eventDialog( events_modalDialog, "1950ad Now I am become death, the destroyer of worlds." );
 	}
-	trigger doNarrativeAges_1970 ( timer_expired("Timer_1970ad") ) {
+	trigger doNarrativeAges_1970 ( timer_expired("Timer_1970ad") && timed_useTimedEnchanced == 1 ) {
 		// Information
+		eventDialog( events_modalDialog, "1970ad The age of information" );
+		for ( player = 1; player <= 8; player++) {
+			enable_tech( player, "Information Age" );
+		}
 	}
-	trigger doNarrativeAges_1990 ( timer_expired("Timer_1990ad") ) {
+	trigger doNarrativeAges_1990 ( timer_expired("Timer_1990ad") && timed_useTimedEnchanced == 1 ) {
 		// MLRS
+		eventDialog( events_modalDialog, "1990ad This is the end of history." );
 	}
 	
 	// we want to randomise difficulty while recording what the chosen difficulty is.
