@@ -448,36 +448,6 @@ scenario {
 		
 		print_game_msg("Initialisation Finished.");	
 		
-		if ( get_ending_age() == 4 ) {
-			// if last age is gunpowder age then do we want to disable gunpowder units?
-			int choice_noGunpowder = popup_choice($S("No Gunpowder?"),$S("Yes"), $S("No"));
-			if ( choice_noGunpowder == 1 ) {
-				print_game_msg("No Gunpowder Allowed");
-				disable_type( "Arquebusiers" );
-				disable_type( "Janissaries" );
-				disable_type( "Janissaries" );
-				disable_type( "Tercios" );
-				disable_type( "Arqimmortal" );
-				disable_type( "Dragoon" );
-				disable_type( "Camel Raider" );
-				disable_type( "Mameluke" );
-				disable_type( "Conquistador" );
-				disable_type( "Musket Horse" );
-				disable_type( "Gun Mahout" );
-				disable_type( "Bombard" );
-				disable_type( "Basilica Bombard" );
-				disable_type( "Corvette" );
-				disable_type( "Fluyt" );
-				disable_type( "Frigate" );
-				disable_type( "Siegeship" );
-				disable_type( "Bomb Vessel" );
-				disable_type( "Bandeirantes" );
-				disable_type( "Galleon" );
-			} else {
-				print_game_msg("Gunpowder Is Allowed");
-			}
-		}
-		
 		int choice_upkeep = popup_choice($S("Enable Upkeep?"),$S("Yes"), $S("No"));
 		if ( choice_upkeep == 1 ) {
 			upkeep_useUpkeep = 1;
@@ -628,6 +598,35 @@ scenario {
 			} else {
 				print_game_msg("Age Locking Script Disabled");
 				acension_useAscension = 0;
+			}
+			if ( get_ending_age() == 4 ) {
+				// if last age is gunpowder age then do we want to disable gunpowder units?
+				int choice_noGunpowder = popup_choice($S("No Gunpowder?"),$S("Yes"), $S("No"));
+				if ( choice_noGunpowder == 1 ) {
+					print_game_msg("No Gunpowder Allowed");
+					disable_type( "Arquebusiers" );
+					disable_type( "Janissaries" );
+					disable_type( "Janissaries" );
+					disable_type( "Tercios" );
+					disable_type( "Arqimmortal" );
+					disable_type( "Dragoon" );
+					disable_type( "Camel Raider" );
+					disable_type( "Mameluke" );
+					disable_type( "Conquistador" );
+					disable_type( "Musket Horse" );
+					disable_type( "Gun Mahout" );
+					disable_type( "Bombard" );
+					disable_type( "Basilica Bombard" );
+					disable_type( "Corvette" );
+					disable_type( "Fluyt" );
+					disable_type( "Frigate" );
+					disable_type( "Siegeship" );
+					disable_type( "Bomb Vessel" );
+					disable_type( "Bandeirantes" );
+					disable_type( "Galleon" );
+				} else {
+					print_game_msg("Gunpowder Is Allowed");
+				}
 			}
 		}
 	}
