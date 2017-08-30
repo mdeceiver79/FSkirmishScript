@@ -340,26 +340,6 @@ scenario {
 			}
 		}
 
-		// unit editing
-		set_object_type_max_range("Artillery", 23);
-		set_object_type_max_range("Siege Mortar", 23);
-		set_object_type_max_range("Howitzer", 23);
-		set_object_type_max_range("Katyusha Rocket", 24);
-		rename_type("Commando", "Pioneer");
-		rename_type("Special Forces", "Commando");
-		rename_type("Rusiny Lancer", "Tartar Lancer");
-		rename_type("Legions", "Cohor");
-		rename_type("Caesar's Legions", "Legio");
-		rename_type("Praetorian Guards", "Palatini");
-		rename_type("Spitamenes", "Genghis Khan");
-		rename_type("Ptolemy", "Ceaser");
-		rename_type("Porus", "Hannibal");
-		rename_type("Parmenio", "Charlemagne");
-		rename_type("Djezzar", "Saladin");
-		rename_type("Memnon", "Chu-ko Liang");
-		set_preq("Commando", "Enlightenment Age", "Enlightenment Age", "Enlightenment Age");
-		set_preq("Special Forces", "Industrial Age", "Industrial Age", "Industrial Age");	
-		
 		// if ( useNoNukes == 1 ) {
 			// print_game_msg("Nukes disabled!");
 			// disable_type("Nuclear ICBM");
@@ -627,6 +607,30 @@ scenario {
 				} else {
 					print_game_msg("Gunpowder Is Allowed");
 				}
+			}
+			int choice_unitTweaks = popup_choice($S("Enable Unit Tweaks?"),$S("Yes"), $S("No"));
+			if ( choice_ascension == 1 ) {
+				print_game_msg("Unit Tweaks Enabled");
+				set_object_type_max_range("Artillery", 23);
+				set_object_type_max_range("Siege Mortar", 23);
+				set_object_type_max_range("Howitzer", 23);
+				set_object_type_max_range("Katyusha Rocket", 24);
+				rename_type("Commando", "Pioneer");
+				rename_type("Special Forces", "Commando");
+				rename_type("Rusiny Lancer", "Tartar Lancer");
+				rename_type("Legions", "Cohor");
+				rename_type("Caesar's Legions", "Legio");
+				rename_type("Praetorian Guards", "Palatini");
+				rename_type("Spitamenes", "Genghis Khan");
+				rename_type("Ptolemy", "Ceaser");
+				rename_type("Porus", "Hannibal");
+				rename_type("Parmenio", "Charlemagne");
+				rename_type("Djezzar", "Saladin");
+				rename_type("Memnon", "Chu-ko Liang");
+				set_preq("Commando", "Enlightenment Age", "Enlightenment Age", "Enlightenment Age");
+				set_preq("Special Forces", "Industrial Age", "Industrial Age", "Industrial Age");	
+			} else {
+				print_game_msg("Unit Tweaks Disabled");
 			}
 		}
 	}
