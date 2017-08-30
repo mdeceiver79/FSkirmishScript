@@ -579,6 +579,8 @@ scenario {
 				print_game_msg("Age Locking Script Disabled");
 				acension_useAscension = 0;
 			}
+		}
+		if ( timed_useTimedEnchanced == 0 ) {
 			if ( get_ending_age() == 4 ) {
 				// if last age is gunpowder age then do we want to disable gunpowder units?
 				int choice_noGunpowder = popup_choice($S("No Gunpowder?"),$S("Yes"), $S("No"));
@@ -609,7 +611,7 @@ scenario {
 				}
 			}
 			int choice_unitTweaks = popup_choice($S("Enable Unit Tweaks?"),$S("Yes"), $S("No"));
-			if ( choice_ascension == 1 ) {
+			if ( choice_unitTweaks == 1 ) {
 				print_game_msg("Unit Tweaks Enabled");
 				set_object_type_max_range("Artillery", 23);
 				set_object_type_max_range("Siege Mortar", 23);
