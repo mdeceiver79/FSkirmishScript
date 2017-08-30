@@ -738,10 +738,50 @@ scenario {
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Gunpowder Age" );
 		}
+		disable_type( "Arquebusiers" );
+		disable_type( "Janissaries" );
+		disable_type( "Janissaries" );
+		disable_type( "Tercios" );
+		disable_type( "Arqimmortal" );
+		disable_type( "Dragoon" );
+		disable_type( "Camel Raider" );
+		disable_type( "Mameluke" );
+		disable_type( "Conquistador" );
+		disable_type( "Musket Horse" );
+		disable_type( "Gun Mahout" );
+		disable_type( "Bombard" );
+		disable_type( "Basilica Bombard" );
+		disable_type( "Corvette" );
+		disable_type( "Fluyt" );
+		disable_type( "Frigate" );
+		disable_type( "Siegeship" );
+		disable_type( "Bomb Vessel" );
+		disable_type( "Bandeirantes" );
+		disable_type( "Galleon" );
 	}
 	trigger doNarrativeAges_1340 ( timer_expired("Timer_1340ad") && timed_useTimedEnchanced == 1 ) {
 		// Handcannons and Bombards
 		eventDialog( events_modalDialog, "1340ad Gunpowder Reaches Europe" );
+		enable_type( "Arquebusiers" );
+		enable_type( "Janissaries" );
+		enable_type( "Janissaries" );
+		enable_type( "Tercios" );
+		enable_type( "Arqimmortal" );
+		enable_type( "Dragoon" );
+		enable_type( "Camel Raider" );
+		enable_type( "Mameluke" );
+		enable_type( "Conquistador" );
+		enable_type( "Musket Horse" );
+		enable_type( "Gun Mahout" );
+		enable_type( "Bombard" );
+		enable_type( "Basilica Bombard" );
+		enable_type( "Corvette" );
+		enable_type( "Fluyt" );
+		enable_type( "Frigate" );
+		enable_type( "Siegeship" );
+		enable_type( "Bomb Vessel" );
+		enable_type( "Bandeirantes" );
+		enable_type( "Galleon" );
 	}
 	trigger doNarrativeAges_1450 ( timer_expired("Timer_1450ad") && timed_useTimedEnchanced == 1 ) {
 		// Arquebusiers
