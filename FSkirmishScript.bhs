@@ -502,7 +502,7 @@ scenario {
 			int timedTimer = 0;
 			int timedTimerHelper = 1;
 			for ( timedTimer = get_starting_age()-1; timedTimer < get_ending_age()-1; timedTimer++ ) {
-				set_timer(ageTimers[timedTimer], timedTimerHelper*timed_timePerAge);
+				set_timer(ageTimers[timedTimer], (timedTimerHelper*timed_timePerAge)+1);
 				timedTimerHelper++;
 			}
 		}
@@ -538,34 +538,35 @@ scenario {
 			}
 			ageTimes[get_starting_age()-1] = 0;
 			if ( ageTimes[1] != -1 ) {
-				set_timer("Timer_1000bc", (int)( ageTimes[1] ) );
+				set_timer("Timer_1000bc", (int)( ageTimes[1]+1 ) );
 				set_timer("Timer_300bc", (int)( ageTimes[1]+timed_timePerAge*0.5 ) ); // cataphracts
 			}
 			if ( ageTimes[2] != -1 ) {
-				set_timer("Timer_400ad", (int)( ageTimes[2] ) );
-				set_timer("Timer_800ad", (int)( ageTimes[2]+timed_timePerAge*1.5 ) ); // knights
+				set_timer("Timer_400ad", (int)( ageTimes[2]+1 ) );
+				set_timer("Timer_800ad", (int)( ageTimes[2]+timed_timePerAge*0.5 ) ); // knights
 			}
 			if ( ageTimes[3] != -1 ) {
-				set_timer("Timer_1200ad", (int)( ageTimes[3] ) );
+				set_timer("Timer_1200ad", (int)( ageTimes[3]+1 ) );
 				set_timer("Timer_1340ad", (int)( ageTimes[3]+timed_timePerAge*0.35 ) ); // gunpowder
 				set_timer("Timer_1450ad", (int)( ageTimes[3]+timed_timePerAge*0.625 ) ); // arquebus
 				set_timer("Timer_1520ad", (int)( ageTimes[3]+timed_timePerAge*0.8 ) ); // musket
 			}
 			if ( ageTimes[4] != -1 ) {
-				set_timer("Timer_1600ad", (int)( ageTimes[4] ) );
-				set_timer("Timer_1750ad", (int)( ageTimes[5]+timed_timePerAge*0.5 ) ); // rifles/skirmishers
-				set_timer("Timer_1840ad", (int)( ageTimes[5]+timed_timePerAge*0.8 ) ); // breach loading
+				set_timer("Timer_1600ad", (int)( ageTimes[4]+1 ) );
+				set_timer("Timer_1750ad", (int)( ageTimes[4]+timed_timePerAge*0.517 ) ); // rifles/skirmishers
+				// set_timer("Timer_1840ad", (int)( ageTimes[4]+timed_timePerAge*0.828 ) ); // breach loading
+				// set_timer("Timer_1860ad", (int)( ageTimes[4]+timed_timePerAge*0.92 ) ); // ironclad loadin
 			}
 			if ( ageTimes[5] != -1 ) {
-				set_timer("Timer_1900ad", (int)( ageTimes[5] ) );
+				set_timer("Timer_1890ad", (int)( ageTimes[5]+1 ) );
 				set_timer("Timer_1915ad", (int)( ageTimes[5]+timed_timePerAge*0.5 ) ); // tanks
 			}
 			if ( ageTimes[6] != -1 ) {
-				set_timer("Timer_1930ad", (int)( ageTimes[6] ) );
+				set_timer("Timer_1930ad", (int)( ageTimes[6]+1 ) );
 				set_timer("Timer_1950ad", (int)( ageTimes[6]+timed_timePerAge*0.5 ) ); // nukes
 			}
 			if ( ageTimes[7] != -1 ) {
-				set_timer("Timer_1970ad", (int)( ageTimes[7] ) );
+				set_timer("Timer_1970ad", (int)( ageTimes[7]+1 ) );
 				set_timer("Timer_1990ad", (int)( ageTimes[7]+timed_timePerAge*0.5 ) ); // MRLS
 			}
 		}
@@ -715,6 +716,11 @@ scenario {
 	trigger doNarrativeAges_1000bc ( timer_expired("Timer_1000bc") && timed_useTimedEnchanced == 1 ) {
 		// Classical age
 		eventDialog( events_modalDialog, "1000bc Classical Age" );
+		
+		disable_type( "Cataphract" );
+		disable_type( "Chevalier" );
+		disable_type( "Companion" );
+		
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Classical Age" );
 		}
@@ -722,16 +728,34 @@ scenario {
 	trigger doNarrativeAges_300bc ( timer_expired("Timer_300bc") && timed_useTimedEnchanced == 1 ) {
 		// Cataphract
 		eventDialog( events_modalDialog, "300bc Macedonian Cataphracts" );
+		
+		enable_type( "Cataphract" );
+		enable_type( "Chevalier" );
+		enable_type( "Companion" );
 	}
 	trigger doNarrativeAges_400 ( timer_expired("Timer_400ad") && timed_useTimedEnchanced == 1 ) {
 		// medieval
 		eventDialog( events_modalDialog, "400ad Middle Ages" );
+		
+		rename_type("Athanatoi", "Zhayedan");
+		
+		disable_type( "Knight" );
+		disable_type( "Heavy Chevalier" );
+		disable_type( "Royal Companion" );
+		
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Medieval Age" );
 		}
 	}
 	trigger doNarrativeAges_800 ( timer_expired("Timer_800ad") && timed_useTimedEnchanced == 1 ) {
 		// knights
+		
+		rename_type("Athanatoi", "Dailamite Infantry");
+		
+		enable_type( "Knight" );
+		enable_type( "Heavy Chevalier" );
+		enable_type( "Royal Companion" );
+		
 		eventDialog( events_modalDialog, "800ad First Knights" );
 	}
 	trigger doNarrativeAges_1200 ( timer_expired("Timer_1200ad") && timed_useTimedEnchanced == 1 ) {
@@ -740,8 +764,8 @@ scenario {
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Gunpowder Age" );
 		}
+		
 		disable_type( "Arquebusiers" );
-		disable_type( "Janissaries" );
 		disable_type( "Janissaries" );
 		disable_type( "Tercios" );
 		disable_type( "Arqimmortal" );
@@ -764,16 +788,11 @@ scenario {
 	trigger doNarrativeAges_1340 ( timer_expired("Timer_1340ad") && timed_useTimedEnchanced == 1 ) {
 		// Handcannons and Bombards
 		eventDialog( events_modalDialog, "1340ad Gunpowder Reaches Europe" );
+		
 		enable_type( "Arquebusiers" );
-		enable_type( "Janissaries" );
 		enable_type( "Janissaries" );
 		enable_type( "Tercios" );
 		enable_type( "Arqimmortal" );
-		enable_type( "Dragoon" );
-		enable_type( "Camel Raider" );
-		enable_type( "Mameluke" );
-		enable_type( "Conquistador" );
-		enable_type( "Musket Horse" );
 		enable_type( "Gun Mahout" );
 		enable_type( "Bombard" );
 		enable_type( "Basilica Bombard" );
@@ -787,15 +806,45 @@ scenario {
 	}
 	trigger doNarrativeAges_1450 ( timer_expired("Timer_1450ad") && timed_useTimedEnchanced == 1 ) {
 		// Arquebusiers
+		
 		eventDialog( events_modalDialog, "1450ad Arquebus invented" );
+		
+		enable_type( "Dragoon" );
+		enable_type( "Camel Raider" );
+		enable_type( "Mameluke" );
+		enable_type( "Conquistador" );
+		enable_type( "Musket Horse" );
 	}
 	trigger doNarrativeAges_1520 ( timer_expired("Timer_1520ad") && timed_useTimedEnchanced == 1 ) {
 		// Musket
 		eventDialog( events_modalDialog, "1520ad Musket invented" );
+		
 	}
 	trigger doNarrativeAges_1600 ( timer_expired("Timer_1600ad") && timed_useTimedEnchanced == 1 ) {
 		// Enlightenment
 		eventDialog( events_modalDialog, "1600ad The ages of Enlightenment" );
+		
+		set_object_type_max_health("Arquebusiers", 137);
+		set_object_type_attack("Arquebusiers", 190);
+		set_object_type_max_health("Heavy Fire Lances", 137);
+		set_object_type_attack("Heavy Fire Lances", 190);
+		set_object_type_max_health("Janissaries", 137);
+		set_object_type_attack("Janissaries", 190);
+		
+		disable_type( "Crossbowmen" );
+		disable_type( "Heavy Archers" );
+		disable_type( "Apedemak Archers" );
+		disable_type( "Elite Royal Hwarang" );
+		
+		disable_type( "Red Coats" );
+		disable_type( "Imperial Guard" );
+		disable_type( "Musketeers" );
+		disable_type( "Royal Janissaries" );
+		disable_type( "Highlanders" );
+		disable_type( "Manchu Musketeers" );
+		disable_type( "Continental Marines" );
+		disable_type( "Junkers" );
+		
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Enlightenment Age" );
 		}
@@ -803,24 +852,46 @@ scenario {
 	trigger doNarrativeAges_1750 ( timer_expired("Timer_1750ad") && timed_useTimedEnchanced == 1 ) {
 		// rifles
 		eventDialog( events_modalDialog, "1750ad Rifled muskets and skirmishers" );
+		
+		enable_type( "Red Coats" );
+		enable_type( "Imperial Guard" );
+		enable_type( "Musketeers" );
+		enable_type( "Royal Janissaries" );
+		enable_type( "Highlanders" );
+		enable_type( "Manchu Musketeers" );
+		enable_type( "Continental Marines" );
+		enable_type( "Junkers" );
+		
 	}
 	trigger doNarrativeAges_1830 ( timer_expired("Timer_1830ad") && timed_useTimedEnchanced == 1 ) {
 		// breach loading
 		eventDialog( events_modalDialog, "1830ad Breach loading weapons invented" );
 	}
+	trigger doNarrativeAges_1860 ( timer_expired("Timer_1860ad") && timed_useTimedEnchanced == 1 ) {
+		// Ironclads
+		eventDialog( events_modalDialog, "1860ad Ironclads." );
+	}
 	trigger doNarrativeAges_1880 ( timer_expired("Timer_1880ad") && timed_useTimedEnchanced == 1 ) {
 		// big ships, first skyscraper, smokeless powder, machine gun
 		eventDialog( events_modalDialog, "1880ad The times are changing. Skyscrapers, metal ships and smokeless powder." );
 	}
-	trigger doNarrativeAges_1900 ( timer_expired("Timer_1900ad") && timed_useTimedEnchanced == 1 ) {
+	trigger doNarrativeAges_1890 ( timer_expired("Timer_1890ad") && timed_useTimedEnchanced == 1 ) {
 		// Industrial
-		eventDialog( events_modalDialog, "1900ad Welcome to the age of industry and opportunity" );
+		eventDialog( events_modalDialog, "1890ad Welcome to the age of industry and opportunity" );
+		
+		disable_type( "Light Tank" );
+		disable_type( "Anti-Tank Rifle" );
+		
 		for ( player = 1; player <= 8; player++) {
 			enable_tech( player, "Industrial Age" );
 		}
 	}
 	trigger doNarrativeAges_1915 ( timer_expired("Timer_1915ad") && timed_useTimedEnchanced == 1 ) {
 		// Tanks
+		
+		enable_type( "Light Tank" );
+		enable_type( "Anti-Tank Rifle" );
+		
 		eventDialog( events_modalDialog, "1915ad Metal landships. The tank is invented." );
 	}
 	trigger doNarrativeAges_1930 ( timer_expired("Timer_1930ad") && timed_useTimedEnchanced == 1 ) {
@@ -832,7 +903,7 @@ scenario {
 	}
 	trigger doNarrativeAges_1950 ( timer_expired("Timer_1950ad") && timed_useTimedEnchanced == 1 ) {
 		// Nukes
-		eventDialog( events_modalDialog, "1950ad Now I am become death, the destroyer of worlds." );
+		//eventDialog( events_modalDialog, "1950ad " );
 	}
 	trigger doNarrativeAges_1970 ( timer_expired("Timer_1970ad") && timed_useTimedEnchanced == 1 ) {
 		// Information
