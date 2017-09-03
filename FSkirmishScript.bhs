@@ -636,6 +636,14 @@ scenario {
 				print_game_msg("Unit Tweaks Disabled");
 			}
 		}
+		
+		// rename general units
+		rename_type("Spitamenes", "Genghis Khan");
+		rename_type("Ptolemy", "Ceaser");
+		rename_type("Porus", "Hannibal");
+		rename_type("Parmenio", "Charlemagne");
+		rename_type("Djezzar", "Saladin");
+		rename_type("Memnon", "Chu-ko Liang");
 	}
 	
 	int playerRank[] = getRanks();
